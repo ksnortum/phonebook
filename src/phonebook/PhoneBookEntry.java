@@ -1,15 +1,15 @@
 package phonebook;
 
 public class PhoneBookEntry {
-    private final String phoneNumber;
+    private final int phoneNumber;
     private final String name;
 
-    public PhoneBookEntry(String phoneNumber, String name) {
+    public PhoneBookEntry(int phoneNumber, String name) {
         this.phoneNumber = phoneNumber;
         this.name = name;
     }
 
-    public String getPhoneNumber() {
+    public int getPhoneNumber() {
         return phoneNumber;
     }
 

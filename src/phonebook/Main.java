@@ -5,7 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Main {
     private static final String PREFIX = "/home/knute/Documents/hyperskill/Phone-Book/";
@@ -21,6 +23,39 @@ public class Main {
         long linearSearchTime = doLinearSearch(phoneBook, names);
         doJumpSearch(phoneBook, names, linearSearchTime);
         doBinarySearch(phoneBook, names);
+        doHashSearch(phoneBook, names);
+    }
+
+    private void doHashSearch(PhoneBookEntry[] phoneBook, String[] names) {
+        System.out.println();
+        System.out.println("Start searching (hash table)...");
+        long createStart = System.currentTimeMillis();
+        HashTable<Integer> table = new HashTable<>(phoneBook.length);
+
+        for (PhoneBookEntry entry : phoneBook) {
+            if (!table.put(entry.getName(), entry.getPhoneNumber())) {
+                System.out.printf("Problem putting name = %s, number = %d%n",
+                        entry.getName(),
+                        entry.getPhoneNumber());
+            }
+        }
+
+        long createStop = System.currentTimeMillis();
+        System.out.printf("Found %d / %d entries. ", names.length, names.length);
+        long searchStart = System.currentTimeMillis();
+
+        for (String name : names) {
+            Integer phoneNumber = table.get(name);
+
+            if (phoneNumber == null) {
+                System.out.printf("Couldn't get %s%n", name);
+            }
+        }
+
+        long searchStop = System.currentTimeMillis();
+        printTime("Time taken", createStart, searchStop, true);
+        printTime("Creating time", createStart, createStop, true);
+        printTime("Searching time", searchStart, searchStop, true);
     }
 
     private void doBinarySearch(PhoneBookEntry[] phoneBook, String[] names) {
@@ -200,7 +235,11 @@ public class Main {
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
             String[] parts = line.split("\\s+");
-            phoneBook[i] = new PhoneBookEntry(parts[0], parts[1]);
+            int phoneNumber = Integer.parseInt(parts[0]);
+            String name = Arrays.stream(parts)
+                    .skip(1)
+                    .collect(Collectors.joining(" "));
+            phoneBook[i] = new PhoneBookEntry(phoneNumber, name);
         }
 
         return phoneBook;
